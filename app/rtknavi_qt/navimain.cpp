@@ -1089,10 +1089,13 @@ void  MainWindow::SvrStart(void)
     stropt[4]=FileSwapMargin;
     strsetopt(stropt);
     
+    char** cmds_periodic = nullptr;
+    char* errmsg = nullptr;
+
     // start rtk server
     if (!rtksvrstart(&rtksvr,SvrCycle,SvrBuffSize,strs,paths,Format,NavSelect,
-                     cmds,rcvopts,NmeaCycle,NmeaReq,nmeapos,&PrcOpt,solopt,
-                     &monistr)) {
+                     cmds,cmds_periodic,rcvopts,NmeaCycle,NmeaReq,nmeapos,&PrcOpt,solopt,
+                     &monistr,errmsg)) {
         traceclose();
         for (i=0;i<8;i++) delete[] paths[i];
         for (i=0;i<3;i++) delete[] rcvopts[i];

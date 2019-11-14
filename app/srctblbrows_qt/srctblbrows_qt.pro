@@ -25,7 +25,7 @@ qtHaveModule(webenginewidgets) {
 
 
 linux{
-    RTKLIB =../../src/libRTKLib.a
+    RTKLIB = ../../src/libRTKLib.a
     LIBS += -lpng $${RTKLIB}
 }
 win32 {

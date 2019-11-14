@@ -33,7 +33,7 @@ TEMPLATE = app
 INCLUDEPATH += ../../src/ ../appcmn_qt ../rtkplot_qt
 
 linux{
-    RTKLIB =../../src/libRTKLib.a
+    RTKLIB = ../../src/libRTKLib.a
     LIBS += -lpng $${RTKLIB} -lpthread
 }
 win32 {

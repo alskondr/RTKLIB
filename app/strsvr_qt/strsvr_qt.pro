@@ -19,7 +19,7 @@ lessThan(QT_MAJOR_VERSION, 5) {
 INCLUDEPATH += ../../src/ ../appcmn_qt
 
 linux{
-    RTKLIB =../../src/libRTKLib.a
+    RTKLIB = ../../src/libRTKLib.a
     LIBS += -lpng $${RTKLIB}
 }
 win32 {
