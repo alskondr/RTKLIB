@@ -1728,7 +1728,7 @@ EXPORT int outsolexs(unsigned char *buff, const sol_t *sol, const ssat_t *ssat,
 EXPORT void outprcopt(FILE *fp, const prcopt_t *opt);
 EXPORT void outsolhead(FILE *fp, const solopt_t *opt);
 EXPORT void outsol  (FILE *fp, const sol_t *sol, const double *rb,
-                     const solopt_t *opt);
+                     const solopt_t *opt, FILE* outTraj, const gtime_t* firstObsTime);
 EXPORT void outsolex(FILE *fp, const sol_t *sol, const ssat_t *ssat,
                      const solopt_t *opt);
 EXPORT int outnmea_rmc(unsigned char *buff, const sol_t *sol);

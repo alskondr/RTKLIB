@@ -2081,7 +2081,7 @@ void  MainWindow::SaveLog(void)
         sol.ns=Nvsat[i];
         sol.ratio=Ratio[i];
         sol.age=Age[i];
-        outsol(f,&sol,SolRef+i*3,&opt);
+        outsol(f,&sol,SolRef+i*3,&opt, nullptr, nullptr);
         if (++i>=SolBuffSize) i=0;
     }
 }

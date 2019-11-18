@@ -77,6 +77,8 @@ static char rtcm_path[1024]=""; /* rtcm data path */
 static rtcm_t rtcm;             /* rtcm control struct */
 static FILE *fp_rtcm=NULL;      /* rtcm data file pointer */
 
+static FILE* s_outTrajectory = NULL;
+
 /* show message and check break ----------------------------------------------*/
 static int checkbrk(const char *format, ...)
 {
@@ -364,7 +366,7 @@ static void procpos(FILE *fp, const prcopt_t *popt, const solopt_t *sopt,
     int i,nobs,n,solstatic,pri[]={0,1,2,3,4,5,1,6};
     
     trace(3,"procpos : mode=%d\n",mode);
-    
+
     solstatic=sopt->solstatic&&
               (popt->mode==PMODE_STATIC||popt->mode==PMODE_PPP_STATIC);
     
@@ -397,7 +399,7 @@ static void procpos(FILE *fp, const prcopt_t *popt, const solopt_t *sopt,
         
         if (mode==0) { /* forward/backward */
             if (!solstatic) {
-                outsol(fp,&rtk.sol,rtk.rb,sopt);
+                outsol(fp,&rtk.sol,rtk.rb,sopt, s_outTrajectory, &obss.data[0].time);
             }
             else if (time.time==0||pri[rtk.sol.stat]<=pri[sol.stat]) {
                 sol=rtk.sol;
@@ -422,7 +424,7 @@ static void procpos(FILE *fp, const prcopt_t *popt, const solopt_t *sopt,
     }
     if (mode==0&&solstatic&&time.time!=0.0) {
         sol.time=time;
-        outsol(fp,&sol,rb,sopt);
+        outsol(fp,&sol,rb,sopt, s_outTrajectory, &obss.data[0].time);
     }
     rtkfree(&rtk);
 }
@@ -542,7 +544,7 @@ static void combres(FILE *fp, const prcopt_t *popt, const solopt_t *sopt)
             }
         }
         if (!solstatic) {
-            outsol(fp,&sols,rbs,sopt);
+            outsol(fp,&sols,rbs,sopt, s_outTrajectory, &obss.data[0].time);
         }
         else if (time.time==0||pri[sols.stat]<=pri[sol.stat]) {
             sol=sols;
@@ -554,7 +556,7 @@ static void combres(FILE *fp, const prcopt_t *popt, const solopt_t *sopt)
     }
     if (solstatic&&time.time!=0.0) {
         sol.time=time;
-        outsol(fp,&sol,rb,sopt);
+        outsol(fp,&sol,rb,sopt, s_outTrajectory, &obss.data[0].time);
     }
 }
 /* read prec ephemeris, sbas data, lex data, tec grid and open rtcm ----------*/
@@ -982,8 +984,13 @@ static int execses(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
     prcopt_t popt_=*popt;
     char tracefile[1024],statfile[1024],path[1024],*ext;
     
+    const char *outTrajectorySuffix = "traj";
+    char outTrajectoryFileName[512];
+    snprintf(outTrajectoryFileName, sizeof outTrajectoryFileName, "%s%s", outfile, outTrajectorySuffix);
+    s_outTrajectory = fopen(outTrajectoryFileName, "w");
+
     trace(3,"execses : n=%d outfile=%s\n",n,outfile);
-    
+
     /* open debug trace */
     if (flag&&sopt->trace>0) {
         if (*outfile) {
@@ -1096,7 +1103,9 @@ static int execses(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
     }
     /* free obs and nav data */
     freeobsnav(&obss,&navs);
-    
+
+    fclose(s_outTrajectory);
+
     return aborts?1:0;
 }
 /* execute processing session for each rover ---------------------------------*/
@@ -1263,7 +1272,7 @@ extern int postpos(gtime_t ts, gtime_t te, double ti, double tu,
     char *ifile[MAXINFILE],ofile[1024],*ext;
     
     trace(3,"postpos : ti=%.0f tu=%.0f n=%d outfile=%s\n",ti,tu,n,outfile);
-    
+
     /* open processing session */
     if (!openses(popt,sopt,fopt,&navs,&pcvss,&pcvsr)) return -1;
     
@@ -1360,6 +1369,6 @@ extern int postpos(gtime_t ts, gtime_t te, double ti, double tu,
     }
     /* close processing session */
     closeses(&navs,&pcvss,&pcvsr);
-    
+
     return stat;
 }

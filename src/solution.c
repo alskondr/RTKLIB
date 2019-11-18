@@ -1716,15 +1716,19 @@ extern void outsolhead(FILE *fp, const solopt_t *opt)
 * return : none
 *-----------------------------------------------------------------------------*/
 extern void outsol(FILE *fp, const sol_t *sol, const double *rb,
-                   const solopt_t *opt)
+                   const solopt_t *opt, FILE* outTraj, const gtime_t* firstObsTime)
 {
     unsigned char buff[MAXSOLMSG+1];
     int n;
     
     trace(3,"outsol  :\n");
-    
+
     if ((n=outsols(buff,sol,rb,opt))>0) {
         fwrite(buff,n,1,fp);
+
+        if(outTraj && firstObsTime)
+          fprintf(outTraj, "%10.6f  %10.3f  %10.3f  %10.3f  %10.3f  %10.3f  %10.3f\n",
+                  timediff(sol->time, *firstObsTime), sol->rr[0], sol->rr[1], sol->rr[2], sol->rr[3], sol->rr[4], sol->rr[5]);
     }
 }
 /* output solution extended ----------------------------------------------------
