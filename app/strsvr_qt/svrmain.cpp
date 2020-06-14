@@ -598,7 +598,7 @@ void MainForm::SvrStart(void)
 
     char* allCmd[4];
     allCmd[0] = cmd;
-    char** cmds_periodic = NULL;
+    char* cmds_periodic[4] = {0};
 
     // stream server start
     if (!strsvrstart(&strsvr,opt,strs,paths,conv,allCmd,cmds_periodic,AntPos)) return;
@@ -606,7 +606,7 @@ void MainForm::SvrStart(void)
     StartTime=utc2gpst(timeget());
     Panel1    ->setEnabled(false);
     BtnStart  ->setVisible(false);
-    BtnStop   ->setVisible(true);
+    BtnStop   ->setEnabled(true);
     BtnOpt    ->setEnabled(false);
     BtnExit   ->setEnabled(false);
     MenuStart ->setEnabled(false);
